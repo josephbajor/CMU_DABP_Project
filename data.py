@@ -9,7 +9,7 @@ def load_NEMSIS(key:str, data_dir: os.PathLike, load_targets: dict):
     
     data_dict = {}
     for f in load_targets.keys():
-        data = dd.read_csv(os.path.join(data_dir, f + ".txt"), delimiter="~\|~", engine="python", blocksize=25e6)
+        data = dd.read_csv(os.path.join(data_dir, f + ".txt"), delimiter="~\|~", engine="python", blocksize=85e6, sample=25000000)
 
         # Remove quotes from headers
         data.columns = [col.strip("'") for col in data.columns]
