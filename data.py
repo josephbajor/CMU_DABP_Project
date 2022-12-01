@@ -8,9 +8,23 @@ import os
 def load_NEMSIS_dask(key:str, data_dir: os.PathLike, load_targets: dict):
     
     data_dict = {}
-    for f in load_targets.keys():
-        data = dd.read_csv(os.path.join(data_dir, f + ".txt"), delimiter="~\|~", engine="python", blocksize=85e6, sample=25000000)
 
+    for f in load_targets.keys():
+        if f == "FACTPCRMEDICATION":
+            data = dd.read_csv(os.path.join(data_dir, f + ".txt"), delimiter="~\|~", engine="python", blocksize=85e6, sample=25000000, dtype={"'eMedications_10'": 'object', "'eMedications_03'": 'object'})
+
+        if f == "FACTPCRPROCEDURE":
+            data = dd.read_csv(os.path.join(data_dir, f + ".txt"), delimiter="~\|~", engine="python", blocksize=85e6, sample=25000000, dtype={"'eProcedures_10'": 'object', "'eProcedures_03'": 'object'})
+
+        if f == "FACTPCRPROTOCOL":
+            data = dd.read_csv(os.path.join(data_dir, f + ".txt"), delimiter="~\|~", engine="python", blocksize=85e6, sample=25000000, dtype={"'eProtocol_01'": 'object'})
+
+        if f == "Pub_PCRevents":
+            data = dd.read_csv(os.path.join(data_dir, f + ".txt"), delimiter="~\|~", engine="python", blocksize=85e6, sample=25000000, dtype={"'eDisposition_23'": 'object', "'eResponse_07'":'object', "'eArrest_11'":'object'})
+
+        else:
+            data = dd.read_csv(os.path.join(data_dir, f + ".txt"), delimiter="~\|~", engine="python", blocksize=85e6, sample=25000000)
+            
         # Remove quotes from headers
         data.columns = [col.strip("'") for col in data.columns]
 
@@ -36,11 +50,16 @@ def load_NEMSIS_pandas(data_dir:os.PathLike, load_targets:dict, nrows:int=500000
         if load_targets[f] is not None:
             data = data[load_targets[f]]
 
-        data = data.replace(to_replace='\.', value=pd.NA, regex=True)
+        data = data.replace(to_replace='^\. $', value=pd.NA, regex=True)
 
         data_dict[f] = data
 
     return data_dict
+
+
+def sort_NEMSIS (data_dir:os.PathLike, load_targets:dict):
+    for f in load_targets.keys():
+        pass
 
 
 def chain_join(datadict:dict, key:str, start_table:str, type:str='left'):
