@@ -1,3 +1,4 @@
 *.pkl
 /.ipynb*
 /__pycache__
+*.csv
